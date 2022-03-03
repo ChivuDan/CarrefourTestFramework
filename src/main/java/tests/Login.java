@@ -1,3 +1,4 @@
+package tests;
 
 public class Login {
    /* // Upload an app using the file manager to generate an "app_url" value. It uniquely identifies your uploaded app on BrowserStack.
