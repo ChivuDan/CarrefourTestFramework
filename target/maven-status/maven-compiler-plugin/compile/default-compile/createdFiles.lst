@@ -1,2 +1,11 @@
-InitialSetup.class
-Main.class
+api\android\Android.class
+core\MyLogger.class
+core\ADB.class
+tests\Login.class
+core\managers\DriverManager.class
+core\TestInfo.class
+core\constants\Credentials.class
+core\InitialSetup.class
+core\UiSelector.class
+core\managers\TestManager.class
+core\UiObject.class

@@ -1,2 +1,12 @@
-C:\Users\Dan Chivu\IdeaProjects\CarrefourTestFramework\src\main\java\Main.java
-C:\Users\Dan Chivu\IdeaProjects\CarrefourTestFramework\src\main\java\InitialSetup.java
+C:\Users\Dan Chivu\IdeaProjects\CarrefourTestFramework\src\main\java\Runner.java
+C:\Users\Dan Chivu\IdeaProjects\CarrefourTestFramework\src\main\java\core\constants\Credentials.java
+C:\Users\Dan Chivu\IdeaProjects\CarrefourTestFramework\src\main\java\core\managers\DriverManager.java
+C:\Users\Dan Chivu\IdeaProjects\CarrefourTestFramework\src\main\java\api\android\Android.java
+C:\Users\Dan Chivu\IdeaProjects\CarrefourTestFramework\src\main\java\core\UiSelector.java
+C:\Users\Dan Chivu\IdeaProjects\CarrefourTestFramework\src\main\java\core\MyLogger.java
+C:\Users\Dan Chivu\IdeaProjects\CarrefourTestFramework\src\main\java\core\InitialSetup.java
+C:\Users\Dan Chivu\IdeaProjects\CarrefourTestFramework\src\main\java\core\managers\TestManager.java
+C:\Users\Dan Chivu\IdeaProjects\CarrefourTestFramework\src\main\java\core\ADB.java
+C:\Users\Dan Chivu\IdeaProjects\CarrefourTestFramework\src\main\java\core\UiObject.java
+C:\Users\Dan Chivu\IdeaProjects\CarrefourTestFramework\src\main\java\core\TestInfo.java
+C:\Users\Dan Chivu\IdeaProjects\CarrefourTestFramework\src\main\java\tests\Login.java
