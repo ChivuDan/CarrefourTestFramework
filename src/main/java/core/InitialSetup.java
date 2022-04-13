@@ -18,7 +18,7 @@ public class InitialSetup {
         caps.setCapability("browserstack.key", "7MrEyLYzpzQEJsgqrzqv");
 
         // Set URL of the application under test
-        caps.setCapability("app", "bs://80dc4c4641d3515890aa4fd0279e7db72a95e871");
+        caps.setCapability("app", "bs://37a24101d4d2bb8a7b37c0040f1042907c4d5be9");
 
         // Specify device and os_version for testing
         caps.setCapability("device", "Samsung Galaxy S20 Ultra");
@@ -38,8 +38,9 @@ public class InitialSetup {
         return driver;
     }
     public static void allowPolicies(AndroidDriver driver){
-
+    if(driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.android.permissioncontroller:id/permission_allow_foreground_only_button\")").isEnabled()){
         driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.android.permissioncontroller:id/permission_allow_foreground_only_button\")").click();
+    }
        /* if(driver.findElementByAndroidUIAutomator(new UiSelector().isClickable("com.carrefourpay.ro:id/btn_close")) {
             driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/btn_close\n\")").click();
         }
