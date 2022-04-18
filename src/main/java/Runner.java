@@ -1,10 +1,5 @@
 import java.net.MalformedURLException;
 
-import core.InitialSetup;
-import io.appium.java_client.android.AndroidDriver;
-import io.appium.java_client.android.AndroidElement;
-import org.openqa.selenium.remote.DesiredCapabilities;
-import tests.Features;
 import tests.Flows;
 
 //demo class for Browserstack
@@ -14,7 +9,7 @@ public class Runner {
     String sessionName2 = "Log-in + Eshop Basket + logOut";
 
     //  Flows.selfScanCheckout();
-    Flows.EShopCheckout();
+    Flows.eShopCheckout();
        /*DesiredCapabilities caps = InitialSetup.initiateCapabilities(sessionName);
        AndroidDriver<AndroidElement> driver = InitialSetup.initiateDriver(caps);
        InitialSetup.allowPolicies(driver);

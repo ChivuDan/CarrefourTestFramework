@@ -42,7 +42,7 @@ public class Flows {
     }
 
     @Test
-    public static void EShopCheckout() throws MalformedURLException, InterruptedException {
+    public static void eShopCheckout() throws MalformedURLException, InterruptedException {
         String sessionName = "EShopCheckout Golden Path";
         String userID = "0744556600";
         String password = "Pw0744556600";
@@ -54,5 +54,51 @@ public class Flows {
         Features.login(driver, caps, userID, password);
         Features.addEshopProduct(driver, caps);
 
+    }
+    @Test
+    public static void inputNewAddress() throws MalformedURLException, InterruptedException {
+    }
+    @Test
+    public static void incrementNumberOfItems() throws MalformedURLException, InterruptedException {
+    }
+    @Test
+    public static void decrementNumberOfItems() throws MalformedURLException, InterruptedException {
+    }
+    @Test
+    public static void addMultipleItemsToBasket() throws MalformedURLException, InterruptedException {
+    }
+    @Test
+    public static void removeItemFromBasket() throws MalformedURLException, InterruptedException {
+    }
+    @Test
+    public static void multipleChancesEvents() throws MalformedURLException, InterruptedException {
+        String sessionName = "EShopCheckout Golden Path";
+        String userID = "0744556600";
+        String password = "Pw0744556600";
+
+        DesiredCapabilities caps = InitialSetup.initiateCapabilities(sessionName);
+        AndroidDriver<AndroidElement> driver = InitialSetup.initiateDriver(caps);
+        JavascriptExecutor jse = driver;
+
+        Features.login( driver,  caps,  userID, password);
+
+    }
+    @Test
+    public static void donateAFGPointsToSingleEvent() throws MalformedURLException, InterruptedException {
+    }
+    @Test
+    public static void favoriteProductsAddItemToFavoritesFromEShop() throws MalformedURLException, InterruptedException {
+    }
+    @Test
+    public static void favoriteProductsAddItemToFavoritesFromEShopBasket() throws MalformedURLException, InterruptedException {
+    }
+    @Test
+    public static void favoriteProductsRemoveItemFromEShopBasket() throws MalformedURLException, InterruptedException {
+    }
+    @Test
+    public static void favoriteProductsRemoveItemFromFavoritesList() throws MalformedURLException, InterruptedException {
+    }
+    @Test
+    public static void favoriteProductsAddItemToBasketFromFavoritesList() throws MalformedURLException, InterruptedException {
     }
 }
