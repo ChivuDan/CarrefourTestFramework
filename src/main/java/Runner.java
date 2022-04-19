@@ -1,5 +1,6 @@
 import java.net.MalformedURLException;
 
+import core.constants.Credentials;
 import tests.Flows;
 
 //demo class for Browserstack
@@ -8,8 +9,10 @@ public class Runner {
     String sessionName = "Sign-up + obtainAFG + deleteAccount";
     String sessionName2 = "Log-in + Eshop Basket + logOut";
 
-    //  Flows.selfScanCheckout();
-    Flows.eShopCheckout();
+    // Flows.selfScanCheckout();
+     Flows.eShopCheckout(Credentials.Environment.PROD);
+    //    Flows.multipleChancesEvents(Credentials.Environment.STAGE);
+        Flows.inputNewAddress(Credentials.Environment.PROD);
        /*DesiredCapabilities caps = InitialSetup.initiateCapabilities(sessionName);
        AndroidDriver<AndroidElement> driver = InitialSetup.initiateDriver(caps);
        InitialSetup.allowPolicies(driver);
