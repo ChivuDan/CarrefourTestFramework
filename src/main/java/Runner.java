@@ -10,9 +10,10 @@ public class Runner {
     String sessionName2 = "Log-in + Eshop Basket + logOut";
 
     // Flows.selfScanCheckout();
-     Flows.eShopCheckout(Credentials.Environment.PROD);
+        Flows.favoriteProductsAddItemToFavoritesFromEShop(Credentials.Environment.PROD);
+     //Flows.eShopCheckout(Credentials.Environment.PROD);
     //    Flows.multipleChancesEvents(Credentials.Environment.STAGE);
-        Flows.inputNewAddress(Credentials.Environment.PROD);
+     //   Flows.inputNewAddress(Credentials.Environment.PROD);
        /*DesiredCapabilities caps = InitialSetup.initiateCapabilities(sessionName);
        AndroidDriver<AndroidElement> driver = InitialSetup.initiateDriver(caps);
        InitialSetup.allowPolicies(driver);

@@ -103,7 +103,16 @@ public class Flows {
     }
 
     @Test
-    public static void incrementNumberOfItems() throws MalformedURLException, InterruptedException {
+    public static void incrementNumberOfItems(Credentials.Environment environment) throws MalformedURLException, InterruptedException {
+        String sessionName = "Input new Address";
+        String userID = "0744999000";
+        String password = "Pw0744999000";
+        DesiredCapabilities caps = InitialSetup.initiateCapabilities(sessionName, environment);
+        AndroidDriver<AndroidElement> driver = InitialSetup.initiateDriver(caps);
+        JavascriptExecutor jse = driver;
+        eShopCheckout(environment);
+        Features.incrementNumberOfItemsInBasket(driver,caps);
+
     }
 
     @Test
@@ -139,7 +148,7 @@ public class Flows {
 
     @Test
     public static void favoriteProductsAddItemToFavoritesFromEShop(Credentials.Environment environment) throws MalformedURLException, InterruptedException {
-        String sessionName = "EShopCheckout Golden Path";
+        String sessionName = "Add an item to favorites from EShop_Golden Path";
         String userID = "0744556600";
         String password = "Pw0744556600";
 
@@ -148,7 +157,8 @@ public class Flows {
         JavascriptExecutor jse = driver;
 
         Features.login(driver, caps, userID, password, environment);
-        Features.addItemToEShopBasket(driver,caps);
+      //  Features.addItemToEShopBasket(driver,caps);
+        Features.addItemToFavoritesFromEshop(driver,caps);
     }
 
     @Test
