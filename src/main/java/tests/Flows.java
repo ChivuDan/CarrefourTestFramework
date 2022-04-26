@@ -1,6 +1,7 @@
 package tests;
 
 import core.InitialSetup;
+import core.UiObject;
 import core.UiSelector;
 import core.constants.Credentials;
 import io.appium.java_client.android.AndroidDriver;
@@ -43,14 +44,13 @@ import static org.junit.Assert.assertTrue;
 
 public class Flows {
     @Test
-    public static void selfScanCheckout(Credentials.Environment environment) throws MalformedURLException, InterruptedException {
+    public static void selfScanCheckout(Credentials.Environment environment, boolean finalStep) throws MalformedURLException, InterruptedException {
         String sessionName = "Self-Scan Checkout Golden Path";
         String userID = "0744335566";
         String password = "Pw0744335566";
 
         DesiredCapabilities caps = InitialSetup.initiateCapabilities(sessionName, environment);
         AndroidDriver<AndroidElement> driver = InitialSetup.initiateDriver(caps);
-        JavascriptExecutor jse = driver;
         WebDriverWait wait = new WebDriverWait(driver, 5000);
 
         Features.login(driver, caps, userID, password, environment);
@@ -61,12 +61,15 @@ public class Flows {
         wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/btn_close\")")))).click();
 
         try {
-            assertTrue(driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/tv_message\")")
-                    .isDisplayed());
+            assertTrue(driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/tv_barcode\")")
+                    .isEnabled());
         } catch (Exception e) {
-            jse.executeScript("browserstack_executor: {\"action\": \"setSessionStatus\", \"arguments\": {\"status\":\"failed\", \"reason\": \"Results not found\"}}");
+            ((JavascriptExecutor) driver).executeScript("browserstack_executor: {\"action\": \"setSessionStatus\", \"arguments\": {\"status\":\"failed\", \"reason\": \"Barcode not found\"}}");
         }
-        driver.quit();
+        if (finalStep) {
+            ((JavascriptExecutor) driver).executeScript("browserstack_executor: {\"action\": \"setSessionStatus\", \"arguments\": {\"status\":\"Passed\", \"reason\": \"Checkout barcode found\"}}");
+            driver.quit();
+        }
     }
 
     @Test
@@ -80,12 +83,11 @@ public class Flows {
         JavascriptExecutor jse = driver;
 
         Features.login(driver, caps, userID, password, environment);
-        Features.addEshopProduct(driver, caps);
-
+        Features.addEshopProduct(driver, caps, true);
     }
 
     @Test
-    public static void inputNewAddress(Credentials.Environment environment) throws MalformedURLException, InterruptedException {
+    public static void inputNewAddress(Credentials.Environment environment, boolean finalStep) throws MalformedURLException, InterruptedException {
         String sessionName = "Input new Address";
         String userID = "0744999000";
         String password = "Pw0744999000";
@@ -100,31 +102,55 @@ public class Flows {
         } catch (Exception e) {
             jse.executeScript("browserstack_executor: {\"action\": \"setSessionStatus\", \"arguments\": {\"status\":\"failed\", \"reason\": \"Results not found\"}}");
         }
+        if (finalStep) {
+            jse.executeScript("browserstack_executor: {\"action\": \"setSessionStatus\", \"arguments\": {\"status\":\"Passed\", \"reason\": \"New Address successfully added\"}}");
+            driver.quit();
+        }
     }
 
     @Test
     public static void incrementNumberOfItems(Credentials.Environment environment) throws MalformedURLException, InterruptedException {
-        String sessionName = "Input new Address";
-        String userID = "0744999000";
-        String password = "Pw0744999000";
+        String sessionName = "Increment Number of items in basket";
+        String userID = "0744556600";
+        String password = "Pw0744556600";
         DesiredCapabilities caps = InitialSetup.initiateCapabilities(sessionName, environment);
         AndroidDriver<AndroidElement> driver = InitialSetup.initiateDriver(caps);
         JavascriptExecutor jse = driver;
-        eShopCheckout(environment);
-        Features.incrementNumberOfItemsInBasket(driver,caps);
+        Features.login(driver, caps, userID, password, environment);
+        Features.addEshopProduct(driver, caps, false);
+        Features.incrementNumberOfItemsInBasket(driver, caps,true);
 
     }
 
     @Test
-    public static void decrementNumberOfItems() throws MalformedURLException, InterruptedException {
+    public static void decrementNumberOfItems(Credentials.Environment environment) throws MalformedURLException, InterruptedException {
+        String sessionName = "Decrement Number of items in basket";
+        String userID = "0744556600";
+        String password = "Pw0744556600";
+        DesiredCapabilities caps = InitialSetup.initiateCapabilities(sessionName, environment);
+        AndroidDriver<AndroidElement> driver = InitialSetup.initiateDriver(caps);
+        JavascriptExecutor jse = driver;
+
+        Features.login(driver, caps, userID, password, environment);
+        Features.addEshopProduct(driver, caps, false);
+        Features.decrementNumberOfItemsInBasket(driver, caps,true);
     }
 
     @Test
     public static void addMultipleItemsToBasket() throws MalformedURLException, InterruptedException {
+
     }
 
     @Test
-    public static void removeItemFromBasket() throws MalformedURLException, InterruptedException {
+    public static void removeItemFromBasket(Credentials.Environment environment) throws MalformedURLException, InterruptedException {
+        String sessionName = "Remove item from basket";
+        String userID = "0744556600";
+        String password = "Pw0744556600";
+        DesiredCapabilities caps = InitialSetup.initiateCapabilities(sessionName, environment);
+        AndroidDriver<AndroidElement> driver = InitialSetup.initiateDriver(caps);
+        JavascriptExecutor jse = driver;
+        Features.addEshopProduct(driver,caps,false);
+        Features.removeItemFromBasket(driver, caps,true);
     }
 
     @Test
@@ -139,7 +165,7 @@ public class Flows {
         AndroidDriver<AndroidElement> driver = InitialSetup.initiateDriver(caps);
         JavascriptExecutor jse = driver;
         Features.login(driver, caps, userID, password, environment);
-        Features.enterAFGExperiente(driver, caps);
+        Features.enterAFGExperiente(driver, caps, true);
     }
 
     @Test
@@ -157,23 +183,52 @@ public class Flows {
         JavascriptExecutor jse = driver;
 
         Features.login(driver, caps, userID, password, environment);
-      //  Features.addItemToEShopBasket(driver,caps);
-        Features.addItemToFavoritesFromEshop(driver,caps);
+        //  Features.addItemToEShopBasket(driver,caps);
+        Features.addItemToFavoritesFromEshop(driver, caps, true);
     }
 
     @Test
-    public static void favoriteProductsAddItemToFavoritesFromEShopBasket() throws MalformedURLException, InterruptedException {
+    public static void favoriteProductsAddItemToFavoritesFromEShopBasket(Credentials.Environment environment) throws MalformedURLException, InterruptedException {
+        String sessionName = "Add item to favorites from Basket";
+        String userID = "0744556600";
+        String password = "Pw0744556600";
+
+        DesiredCapabilities caps = InitialSetup.initiateCapabilities(sessionName, environment);
+        AndroidDriver<AndroidElement> driver = InitialSetup.initiateDriver(caps);
+        JavascriptExecutor jse = driver;
+        Features.login(driver, caps, userID, password, environment);
+        Features.addEshopProduct(driver, caps, false);
+        Features.eShopBasketAddItemToFavorites(driver, caps);
+
+    }
+
+
+    @Test
+    public static void favoriteProductsRemoveItemFromFavoritesList(Credentials.Environment environment) throws MalformedURLException, InterruptedException {
+        String sessionName = "Add item to favorites from Basket";
+        String userID = "0744556600";
+        String password = "Pw0744556600";
+
+        DesiredCapabilities caps = InitialSetup.initiateCapabilities(sessionName, environment);
+        AndroidDriver<AndroidElement> driver = InitialSetup.initiateDriver(caps);
+        JavascriptExecutor jse = driver;
+
+        Features.login(driver, caps, userID, password, environment);
+        Features.addItemToFavoritesFromEshop(driver, caps, false);
+        Features.removeItemFromFavoritesToBasket(driver, caps, true);
     }
 
     @Test
-    public static void favoriteProductsRemoveItemFromEShopBasket() throws MalformedURLException, InterruptedException {
-    }
+    public static void favoriteProductsAddItemToBasketFromFavoritesList(Credentials.Environment environment) throws MalformedURLException, InterruptedException {
+        String sessionName = "Add item to Basket from favorites";
+        String userID = "0744888000";
+        String password = "Pw0744888000";
 
-    @Test
-    public static void favoriteProductsRemoveItemFromFavoritesList() throws MalformedURLException, InterruptedException {
-    }
+        DesiredCapabilities caps = InitialSetup.initiateCapabilities(sessionName, environment);
+        AndroidDriver<AndroidElement> driver = InitialSetup.initiateDriver(caps);
+        JavascriptExecutor jse = driver;
+        Features.login(driver, caps, userID, password, environment);
+        Features.addItemFromFavoritesToBasket(driver, caps);
 
-    @Test
-    public static void favoriteProductsAddItemToBasketFromFavoritesList() throws MalformedURLException, InterruptedException {
     }
 }

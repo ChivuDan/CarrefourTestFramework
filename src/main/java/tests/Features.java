@@ -10,8 +10,6 @@ import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.AndroidElement;
 import io.appium.java_client.touch.WaitOptions;
 import io.appium.java_client.touch.offset.PointOption;
-
-import org.junit.Assert;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Capabilities;
@@ -20,15 +18,11 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import org.openqa.selenium.remote.DesiredCapabilities;
-import java.sql.Driver;
+
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 
@@ -40,24 +34,28 @@ public class Features {
 
         try {
             if ((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/tv_title\")")).isEnabled()) {
-                wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/btn_close\")")))).click();
+                UiObject.click(wait, driver, "com.carrefourpay.ro:id/btn_close");
             }
         } catch (Exception e) {
             InitialSetup.allowPolicies(driver, environment);
         }
-        wait.until(ExpectedConditions.elementToBeClickable(driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/btn_account\")"))).click();
-        wait.until(ExpectedConditions.elementToBeClickable(driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/btn_login_register\")"))).click();
+        UiObject.click(wait, driver, "com.carrefourpay.ro:id/btn_account");
+        UiObject.click(wait, driver, "com.carrefourpay.ro:id/btn_login_register");
         wait.until(ExpectedConditions.elementToBeClickable(driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/et_user_id\")"))).sendKeys(userID);
-        wait.until(ExpectedConditions.elementToBeClickable(driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/btn_continue\")"))).click();
+        UiObject.click(wait, driver, "com.carrefourpay.ro:id/btn_continue");
         wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/et_password\")"))));
+
         driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/et_password\")").sendKeys(password);
-        driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/btn_login\")").click();
+        UiObject.click(wait, driver, "com.carrefourpay.ro:id/btn_login");
         if ((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/btn_send\")")).isDisplayed()) {
-            driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/btn_cancel\")").click();
+            UiObject.click(wait, driver, "com.carrefourpay.ro:id/btn_cancel");
         }
-        if ((environment == Credentials.Environment.STAGE && (driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/container_consents\")")).isDisplayed())) {
+        if (environment == Credentials.Environment.STAGE) {
+            UiObject.click(wait, driver, "com.carrefourpay.ro:id/btn_activate_all");
+        }
+        /*if (((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/container_consents\")")).isEnabled())) {
             driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/btn_activate_all\")").click();
-        }
+        }*/
         /*
         The consents form has been removed from this state as of 4.12 on Prod
 
@@ -97,6 +95,8 @@ public class Features {
         } catch (Exception e) {
             jse.executeScript("browserstack_executor: {\"action\": \"setSessionStatus\", \"arguments\": {\"status\":\"failed\", \"reason\": \"Results not found\"}}");
         }
+        jse.executeScript("browserstack_executor: {\"action\": \"setSessionStatus\", \"arguments\": {\"status\": \"passed\", \"reason\": \"Test passed!\"}}");
+
         // jse.executeScript("browserstack_executor: {\"action\": \"setSessionStatus\", \"arguments\": {\"status\": \"passed\", \"reason\": \"Results found!\"}}");
 
     }
@@ -107,14 +107,87 @@ public class Features {
         driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/btn_logout\")").click();
         driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/btn_continue\")").click();
     }
+
     @Test
-    public static void  incrementNumberOfItemsInBasket(AndroidDriver<AndroidElement> driver, DesiredCapabilities caps) throws InterruptedException {
+    public static void removeItemFromBasket(AndroidDriver<AndroidElement> driver, DesiredCapabilities caps, boolean finalStep) throws InterruptedException {
 
         WebDriverWait wait = new WebDriverWait(driver, 20);
         driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
-        UiObject.click(wait, driver, "com.carrefourpay.ro:id/action_eshop");
+        JavascriptExecutor jse = (JavascriptExecutor) driver;
 
+        wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/tv_product_count\")"))));
+        Integer itemCount = Integer.parseInt(driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/tv_product_count\")").getText());
+        if (itemCount > 1) {
+            decrementNumberOfItemsInBasket(driver, caps, false);
+        } else if (itemCount == 1) {
+            wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/iv_subtract\")"))));
+            UiObject.click(wait, driver, "com.carrefourpay.ro:id/iv_subtract");
+        }
+        try {
+            assertTrue(0 == Integer.parseInt(driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/tv_whole_price\")").getText()));
+        } catch (Exception e) {
+            jse.executeScript("browserstack_executor: {\"action\": \"setSessionStatus\", \"arguments\": {\"status\":\"failed\", \"reason\": \"Results not found\"}}");
+        }
+        if (finalStep) {
+            jse.executeScript("browserstack_executor: {\"action\": \"setSessionStatus\", \"arguments\": {\"status\": \"passed\", \"reason\": \"Test passed!\"}}");
+            driver.quit();
+        }
     }
+
+    @Test
+    public static void incrementNumberOfItemsInBasket(AndroidDriver<AndroidElement> driver, DesiredCapabilities caps, boolean finalStep) throws InterruptedException {
+
+        WebDriverWait wait = new WebDriverWait(driver, 20);
+        driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
+        JavascriptExecutor jse = (JavascriptExecutor) driver;
+
+        UiObject.click(wait, driver, "com.carrefourpay.ro:id/btn_online_checkout");
+        wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/tv_product_count\")"))));
+        Integer itemCount = Integer.parseInt(driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/tv_product_count\")").getText());
+        UiObject.click(wait, driver, "com.carrefourpay.ro:id/iv_add");
+
+        wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/tv_product_count\")"))));
+        try {
+            assertTrue(itemCount + 1 == Integer.parseInt(driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/tv_product_count\")")
+                    .getText()));
+
+        } catch (Exception e) {
+            jse.executeScript("browserstack_executor: {\"action\": \"setSessionStatus\", \"arguments\": {\"status\":\"failed\", \"reason\": \"Results not found\"}}");
+        }
+        if (finalStep) {
+            jse.executeScript("browserstack_executor: {\"action\": \"setSessionStatus\", \"arguments\": {\"status\": \"passed\", \"reason\": \"Test passed!\"}}");
+            driver.quit();
+        }
+    }
+
+    @Test
+    public static void decrementNumberOfItemsInBasket(AndroidDriver<AndroidElement> driver, DesiredCapabilities caps, boolean finalStep) throws InterruptedException {
+
+        WebDriverWait wait = new WebDriverWait(driver, 20);
+        driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
+        JavascriptExecutor jse = (JavascriptExecutor) driver;
+
+        UiObject.click(wait, driver, "com.carrefourpay.ro:id/btn_online_checkout");
+        wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/tv_product_count\")"))));
+        Integer itemCount = Integer.parseInt(driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/tv_product_count\")").getText());
+        if (itemCount < 1) {
+            UiObject.click(wait, driver, "com.carrefourpay.ro:id/iv_add");
+        } else {
+            wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/tv_product_count\")"))));
+            itemCount = Integer.parseInt(driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/tv_product_count\")").getText());
+            UiObject.click(wait, driver, "com.carrefourpay.ro:id/iv_subtract");
+        }
+        try {
+            assertTrue(itemCount - 1 == Integer.parseInt(driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/tv_product_count\")").getText()));
+        } catch (Exception e) {
+            jse.executeScript("browserstack_executor: {\"action\": \"setSessionStatus\", \"arguments\": {\"status\":\"failed\", \"reason\": \"Results not found\"}}");
+        }
+        if (finalStep) {
+            jse.executeScript("browserstack_executor: {\"action\": \"setSessionStatus\", \"arguments\": {\"status\": \"passed\", \"reason\": \"Test passed!\"}}");
+            driver.quit();
+        }
+    }
+
     @Test
     public static void signUp(AndroidDriver<AndroidElement> driver, DesiredCapabilities caps) throws InterruptedException {
 
@@ -154,6 +227,7 @@ public class Features {
         }
         assertTrue(driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/btn_account\")")
                 .isDisplayed());
+
     }
 
     @Test
@@ -193,49 +267,78 @@ public class Features {
         driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/btn_enroll\")").click();
         assertTrue(driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/tab_container\")").isEnabled());
     }
+
     @Test
-    public static void addItemToFavoritesFromBasket(AndroidDriver<AndroidElement> driver, Capabilities caps) throws InterruptedException {
+    public static void eShopBasketAddItemToFavorites(AndroidDriver<AndroidElement> driver, Capabilities caps) throws InterruptedException {
         WebDriverWait wait = new WebDriverWait(driver, 20);
         driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
+        JavascriptExecutor jse = (JavascriptExecutor) driver;
+
+        UiObject.click(wait, driver, "com.carrefourpay.ro:id/btn_online_checkout");
+        UiObject.click(wait, driver, "com.carrefourpay.ro:id/btn_move_to_favorites");
+
+        try {
+            assertTrue(wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator
+                    ("new UiSelector().resourceId(\"com.carrefourpay.ro:id/recycler\")")))).isEnabled());
+        } catch (Exception e) {
+            jse.executeScript("browserstack_executor: {\"action\": \"setSessionStatus\", \"arguments\": {\"status\":\"failed\", \"reason\": \"Results not found\"}}");
+        }
+        jse.executeScript("browserstack_executor: {\"action\": \"setSessionStatus\", \"arguments\": {\"status\": \"passed\", \"reason\": \"Test passed!\"}}");
+
     }
-        @Test
-    public static void addItemToFavoritesFromEshop(AndroidDriver<AndroidElement> driver, Capabilities caps) throws InterruptedException {
+
+    @Test
+    public static void addItemToFavoritesFromEshop(AndroidDriver<AndroidElement> driver, Capabilities caps, boolean finalStep) throws InterruptedException {
         WebDriverWait wait = new WebDriverWait(driver, 20);
         driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
-        wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/action_eshop\")")))).click();
-        wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/btn_account\")"))));
+        JavascriptExecutor jse = (JavascriptExecutor) driver;
+
+
+        UiObject.click(wait, driver, "com.carrefourpay.ro:id/action_eshop");
+        //    UiObject.click(wait,driver, "com.carrefourpay.ro:id/btn_account");
 
         List<AndroidElement> elements = driver.findElements(By.className("android.widget.TextView"));
         for (WebElement element : elements) {
-            if (element.getText().equals("IT & C")) {
+            if (element.getText().equals("TEX & Fashion")) {
                 element.click();
                 break;
             }
         }
-        wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/product_info\")")))).click();
-        wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/tv_whole_price\")"))));
-        String wholePriceOfItem = driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/tv_whole_price\")").getText();
-        wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/btn_favorite\")")))).click();
+
+        UiObject.click(wait, driver, "com.carrefourpay.ro:id/product_info");
+        wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/tv_product_name\")")))).isEnabled();
+        String tv_product_name = driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/tv_product_name\")").getText();
+        System.out.println("productName is " + tv_product_name);
+        UiObject.click(wait, driver, "com.carrefourpay.ro:id/btn_favorite");
         wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().className(\"android.widget.ImageButton\")")))).click();
         wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().className(\"android.widget.ImageButton\")")))).click();
-        wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/btn_account\")")))).click();
-        wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/btn_wishlist\")")))).click();
-
-        wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/tv_whole_price\")"))));
-
-    assertTrue(driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/tv_whole_price\")").getText().equals(wholePriceOfItem));
-
+        UiObject.click(wait, driver, "com.carrefourpay.ro:id/btn_account");
+        UiObject.click(wait, driver, "com.carrefourpay.ro:id/btn_wishlist");
+        wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/tv_favorite_name\")")))).isEnabled();
+        String tv_favorite_name = driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/tv_favorite_name\")").getText();
+        boolean namesAreSame = tv_product_name.equals(tv_favorite_name);
+        System.out.println("productName is " + tv_product_name);
+        System.out.println("favoriteName is " + tv_favorite_name);
         wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/iv_favorite_remove\")")))).click();
-
+        try {
+            assertTrue(namesAreSame && wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator
+                    ("new UiSelector().resourceId(\"com.carrefourpay.ro:id/refresh_layout\")")))).isEnabled());
+        } catch (Exception e) {
+            jse.executeScript("browserstack_executor: {\"action\": \"setSessionStatus\", \"arguments\": {\"status\":\"failed\", \"reason\": \"Results not found\"}}");
+        }
+        if (finalStep) {
+            jse.executeScript("browserstack_executor: {\"action\": \"setSessionStatus\", \"arguments\": {\"status\": \"passed\", \"reason\": \"Test passed!\"}}");
+        }
     }
-        @Test
+
+    @Test
     public static void addNewAddress(AndroidDriver<AndroidElement> driver, Capabilities caps) throws InterruptedException {
         WebDriverWait wait = new WebDriverWait(driver, 10);
         driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
+        UiObject.click(wait, driver, "com.carrefourpay.ro:id/btn_account");
+        UiObject.click(wait, driver, "com.carrefourpay.ro:id/btn_addresses");
+        UiObject.click(wait, driver, "com.carrefourpay.ro:id/btn_add_address");
 
-        wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/btn_account\")")))).click();
-        wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/btn_addresses\")")))).click();
-        wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/btn_add_address\")")))).click();
         wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/et_address_name\")")))).sendKeys("Adresa De test");
         wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/et_last_name\")")))).sendKeys("Nume De test");
         wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/et_first_name\")")))).sendKeys("Prenume De test");
@@ -256,13 +359,12 @@ public class Features {
         wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/et_floor\")")))).sendKeys("8");
         wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/et_apartment\")")))).sendKeys("15");
         wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/et_intercom\")")))).sendKeys("10");
-        wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/et_county\")")))).click();
+        UiObject.click(wait, driver, "com.carrefourpay.ro:id/et_county");
         action.press(PointOption.point(117, 1102))
                 .waitAction(WaitOptions.waitOptions(Duration.ofSeconds(0)))
                 .release();
         action.perform();
-
-        wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/et_city\")")))).click();
+        UiObject.click(wait, driver, "com.carrefourpay.ro:id/et_city");
         action.press(PointOption.point(117, 1230))
                 .waitAction(WaitOptions.waitOptions(Duration.ofSeconds(0)))
                 .release();
@@ -284,34 +386,104 @@ public class Features {
                 break;
             }}*/
         wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/et_zip\")")))).sendKeys("004400");
-        wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/btn_add_address\")")))).click();
-
-
+        UiObject.click(wait, driver, "com.carrefourpay.ro:id/btn_add_address");
     }
-        @Test
-    public static void enterAFGExperiente(AndroidDriver<AndroidElement> driver, Capabilities caps) throws InterruptedException {
+
+    @Test
+    public static void enterAFGExperiente(AndroidDriver<AndroidElement> driver, Capabilities caps, boolean finalStep) throws InterruptedException {
         WebDriverWait wait = new WebDriverWait(driver, 10);
         driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
+        JavascriptExecutor jse = (JavascriptExecutor) driver;
 
-        wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/action_loyalty\")")))).click();
+
+        UiObject.click(wait, driver, "com.carrefourpay.ro:id/action_loyalty");
         List<AndroidElement> elements = driver.findElements(By.id("com.carrefourpay.ro:id/tab_text"));
         for (WebElement element : elements) {
             if (element.getText().equals("Experiențe")) {
                 element.click();
                 break;
-            }}
-        wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/btn_enroll\")")))).click();
-        wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/btn_continue\")")))).click();
-        wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/btn_account\")")))).click();
-
-
+            }
+        }
+        UiObject.click(wait, driver, "com.carrefourpay.ro:id/btn_enroll");
+        UiObject.click(wait, driver, "com.carrefourpay.ro:id/btn_continue");
+        try {
+            assertTrue(driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/container_details\")").isEnabled());
+        } catch (Exception e) {
+            jse.executeScript("browserstack_executor: {\"action\": \"setSessionStatus\", \"arguments\": {\"status\":\"failed\", \"reason\": \"Results not found\"}}");
+        }
+        if (finalStep) {
+            jse.executeScript("browserstack_executor: {\"action\": \"setSessionStatus\", \"arguments\": {\"status\":\"passed\", \"reason\": \"Test passed\"}}");
+            driver.quit();
+        }
     }
+
     @Test
-    public static void addEshopProduct(AndroidDriver<AndroidElement> driver, Capabilities caps) throws InterruptedException {
+    public static void emptyBasket(AndroidDriver<AndroidElement> driver, DesiredCapabilities caps, boolean finalStep) throws InterruptedException {
         WebDriverWait wait = new WebDriverWait(driver, 10);
         driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
+        JavascriptExecutor jse = (JavascriptExecutor) driver;
+        UiObject.click(wait, driver, "com.carrefourpay.ro:id/btn_empty_cart");
+        UiObject.click(wait, driver, "com.carrefourpay.ro:id/btn_continue");
+        try {
+            assertTrue(driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/recycler\")").isEnabled());
+        } catch (Exception e) {
+            jse.executeScript("browserstack_executor: {\"action\": \"setSessionStatus\", \"arguments\": {\"status\":\"failed\", \"reason\": \"Results not found\"}}");
+        }
+        if (finalStep) {
+            jse.executeScript("browserstack_executor: {\"action\": \"setSessionStatus\", \"arguments\": {\"status\":\"passed\", \"reason\": \"Test passed!\"}}");
+        }
+    }
 
-        wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/action_eshop\")")))).click();
+    @Test
+    public static void addItemFromFavoritesToBasket(AndroidDriver<AndroidElement> driver, DesiredCapabilities caps) throws InterruptedException {
+        WebDriverWait wait = new WebDriverWait(driver, 10);
+        driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
+        JavascriptExecutor jse = (JavascriptExecutor) driver;
+
+        UiObject.click(wait, driver, "com.carrefourpay.ro:id/btn_account");
+        UiObject.click(wait, driver, "com.carrefourpay.ro:id/btn_wishlist");
+        UiObject.click(wait, driver, "com.carrefourpay.ro:id/btn_add_to_cart");
+        UiObject.click(wait, driver, "com.carrefourpay.ro:id/btn_cart");
+
+        try {
+            assertTrue(driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/tv_product_added\")").isEnabled());
+        } catch (Exception e) {
+            jse.executeScript("browserstack_executor: {\"action\": \"setSessionStatus\", \"arguments\": {\"status\":\"failed\", \"reason\": \"Results not found\"}}");
+        }
+        wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/btn_online_checkout\")")))).click();
+        emptyBasket(driver, caps, false);
+        jse.executeScript("browserstack_executor: {\"action\": \"setSessionStatus\", \"arguments\": {\"status\":\"passed\", \"reason\": \"Test passed!\"}}");
+
+    }
+
+    @Test
+    public static void removeItemFromFavoritesToBasket(AndroidDriver<AndroidElement> driver, DesiredCapabilities caps, boolean finalStep) throws InterruptedException {
+        WebDriverWait wait = new WebDriverWait(driver, 10);
+        driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
+        JavascriptExecutor jse = (JavascriptExecutor) driver;
+
+        UiObject.click(wait, driver, "com.carrefourpay.ro:id/iv_favorite_remove");
+
+        try {
+            assertTrue(driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/refresh_layout\")").isEnabled());
+        } catch (Exception e) {
+            jse.executeScript("browserstack_executor: {\"action\": \"setSessionStatus\", \"arguments\": {\"status\":\"failed\", \"reason\": \"Results not found\"}}");
+        }
+        wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/btn_online_checkout\")")))).click();
+        emptyBasket(driver, caps, false);
+        if (finalStep) {
+            jse.executeScript("browserstack_executor: {\"action\": \"setSessionStatus\", \"arguments\": {\"status\":\"passed\", \"reason\": \"Test passed!\"}}");
+        }
+    }
+
+    @Test
+    public static void addEshopProduct(AndroidDriver<AndroidElement> driver, Capabilities caps, boolean finalStep) throws InterruptedException {
+        WebDriverWait wait = new WebDriverWait(driver, 10);
+        driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
+        JavascriptExecutor jse = (JavascriptExecutor) driver;
+
+        UiObject.click(wait, driver, "com.carrefourpay.ro:id/action_eshop");
+
         List<AndroidElement> elements = driver.findElements(By.className("android.widget.TextView"));
         for (WebElement element : elements) {
             if (element.getText().equals("TEX & Fashion")) {
@@ -319,22 +491,27 @@ public class Features {
                 break;
             }
         }
-
-        wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/product_info\")")))).click();
-
-        wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/btn_order\")")))).click();
+        UiObject.click(wait, driver, "com.carrefourpay.ro:id/product_info");
+        UiObject.click(wait, driver, "com.carrefourpay.ro:id/btn_order");
         List<AndroidElement> productSizes = driver.findElements(By.className("android.widget.TextView"));
         for (WebElement productSize : productSizes) {
-            if (productSize.getText().equals("2/3 ani")) {
+            if (productSize.getText().equals("37/38")) {
                 productSize.click();
                 break;
             }
         }
+        UiObject.click(wait, driver, "com.carrefourpay.ro:id/btn_order");
+        UiObject.click(wait, driver, "com.carrefourpay.ro:id/btn_cart");
 
-        wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/btn_order\")")))).click();
-        Thread.sleep(10000);
-        wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/btn_cart\")")))).click();
-        Thread.sleep(10000);
-        assertTrue(driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/tv_whole_price\")").getText() != null);
+        try {
+            assertTrue(driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/tv_whole_price\")").getText() != null);
+        } catch (Exception e) {
+            jse.executeScript("browserstack_executor: {\"action\": \"setSessionStatus\", \"arguments\": {\"status\":\"failed\", \"reason\": \"Results not found\"}}");
+        }
+        if (finalStep) {
+            jse.executeScript("browserstack_executor: {\"action\": \"setSessionStatus\", \"arguments\": {\"status\":\"passed\", \"reason\": \"Test passed!\"}}");
+            driver.quit();
+        }
+
     }
 }

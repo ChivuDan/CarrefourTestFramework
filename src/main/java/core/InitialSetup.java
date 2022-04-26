@@ -39,8 +39,8 @@ public class InitialSetup {
         caps.setCapability("os_version", "10.0");
 
         // Set other BrowserStack capabilities
-        caps.setCapability("project", "FSD Carrefour automation framework");
-        caps.setCapability("build", "browserstack-build-2");
+        caps.setCapability("project", "FSD Carrefour Automation Staging");
+        caps.setCapability("build", "SP1");
         caps.setCapability("name", sessionName);
 
         return caps;
@@ -63,14 +63,14 @@ public class InitialSetup {
         if (environment == Credentials.Environment.STAGE) {
             wait.until(ExpectedConditions.elementToBeClickable((driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/btn_close\")")))).click();
         }
-    }
 
-      /*  try {
-            driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/btn_activate_all\")").click();
-        } catch (Exception e){
+
+       /* try {
+            UiObject.click(wait,driver, "com.carrefourpay.ro:id/btn_activate_all");
+        } catch (Exception e) {
             driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/btn_close\n\")").click();
-        }
-      //  driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/btn_close\n\")").click();*/
-
+        }*/
+        //  driver.findElementByAndroidUIAutomator("new UiSelector().resourceId(\"com.carrefourpay.ro:id/btn_close\n\")").click();*/
+    }
 }
 

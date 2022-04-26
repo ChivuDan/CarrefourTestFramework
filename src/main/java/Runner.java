@@ -6,14 +6,21 @@ import tests.Flows;
 //demo class for Browserstack
 public class Runner {
     public static void main(String[] args) throws MalformedURLException, InterruptedException {
-    String sessionName = "Sign-up + obtainAFG + deleteAccount";
-    String sessionName2 = "Log-in + Eshop Basket + logOut";
+        String sessionName = "Sign-up + obtainAFG + deleteAccount";
+        String sessionName2 = "Log-in + Eshop Basket + logOut";
 
-    // Flows.selfScanCheckout();
+        Flows.selfScanCheckout(Credentials.Environment.PROD, true);
+        Flows.eShopCheckout(Credentials.Environment.PROD);
+        Flows.multipleChancesEvents(Credentials.Environment.STAGE);
+        Flows.inputNewAddress(Credentials.Environment.PROD,true);
+        Flows.incrementNumberOfItems(Credentials.Environment.PROD);
+        Flows.decrementNumberOfItems(Credentials.Environment.PROD);
+        Flows.removeItemFromBasket(Credentials.Environment.PROD);
+        //Flows.donateAFGPointsToSingleEvent();
         Flows.favoriteProductsAddItemToFavoritesFromEShop(Credentials.Environment.PROD);
-     //Flows.eShopCheckout(Credentials.Environment.PROD);
-    //    Flows.multipleChancesEvents(Credentials.Environment.STAGE);
-     //   Flows.inputNewAddress(Credentials.Environment.PROD);
+        Flows.favoriteProductsAddItemToFavoritesFromEShopBasket(Credentials.Environment.PROD);
+        Flows.favoriteProductsAddItemToBasketFromFavoritesList(Credentials.Environment.PROD);
+        Flows.favoriteProductsRemoveItemFromFavoritesList(Credentials.Environment.PROD);
        /*DesiredCapabilities caps = InitialSetup.initiateCapabilities(sessionName);
        AndroidDriver<AndroidElement> driver = InitialSetup.initiateDriver(caps);
        InitialSetup.allowPolicies(driver);
