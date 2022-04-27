@@ -9,15 +9,15 @@ public class Runner {
         String sessionName = "Sign-up + obtainAFG + deleteAccount";
         String sessionName2 = "Log-in + Eshop Basket + logOut";
 
-        Flows.selfScanCheckout(Credentials.Environment.PROD, true);
+/*        Flows.selfScanCheckout(Credentials.Environment.PROD, true);
         Flows.eShopCheckout(Credentials.Environment.PROD);
         Flows.multipleChancesEvents(Credentials.Environment.STAGE);
         Flows.inputNewAddress(Credentials.Environment.PROD,true);
         Flows.incrementNumberOfItems(Credentials.Environment.PROD);
         Flows.decrementNumberOfItems(Credentials.Environment.PROD);
-        Flows.removeItemFromBasket(Credentials.Environment.PROD);
-        //Flows.donateAFGPointsToSingleEvent();
-        Flows.favoriteProductsAddItemToFavoritesFromEShop(Credentials.Environment.PROD);
+        Flows.removeItemFromBasket(Credentials.Environment.PROD, true);
+        Flows.donateAFGPointsToSingleEvent();*/
+        //Flows.favoriteProductsAddItemToFavoritesFromEShop(Credentials.Environment.PROD);
         Flows.favoriteProductsAddItemToFavoritesFromEShopBasket(Credentials.Environment.PROD);
         Flows.favoriteProductsAddItemToBasketFromFavoritesList(Credentials.Environment.PROD);
         Flows.favoriteProductsRemoveItemFromFavoritesList(Credentials.Environment.PROD);
