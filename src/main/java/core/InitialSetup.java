@@ -29,7 +29,7 @@ public class InitialSetup {
                 break;
             case PROD:
                 //4.12 Prod
-                caps.setCapability("app", "bs://37a24101d4d2bb8a7b37c0040f1042907c4d5be9");
+                caps.setCapability("app", "bs://3ad02a4fcba5275b4602080bf00a438f8967e121");
                 break;
         }
 

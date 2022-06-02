@@ -173,7 +173,17 @@ public class Flows {
     }
 
     @Test
-    public static void donateAFGPointsToSingleEvent() throws MalformedURLException, InterruptedException {
+    public static void donateAFGPointsToSingleEvent(Credentials.Environment environment, boolean finalStep) throws MalformedURLException, InterruptedException {
+        String sessionName = "Add chances to a Multiple chance event";
+        String userID = "0744555999";
+        String password = "Pw0744555999";
+
+        DesiredCapabilities caps = InitialSetup.initiateCapabilities(sessionName, environment);
+        AndroidDriver<AndroidElement> driver = InitialSetup.initiateDriver(caps);
+        JavascriptExecutor jse = driver;
+        Features.login(driver, caps, userID, password, environment);
+        Features.enterAFGExperiente(driver, caps, true);
+
     }
 
     @Test
@@ -210,8 +220,8 @@ public class Flows {
     @Test
     public static void favoriteProductsRemoveItemFromFavoritesList(Credentials.Environment environment) throws MalformedURLException, InterruptedException {
         String sessionName = "Add item to favorites from Basket";
-        String userID = "0744556600";
-        String password = "Pw0744556600";
+        String userID = "0755444333";
+        String password = "Pw0755444333";
 
         DesiredCapabilities caps = InitialSetup.initiateCapabilities(sessionName, environment);
         AndroidDriver<AndroidElement> driver = InitialSetup.initiateDriver(caps);
@@ -219,14 +229,14 @@ public class Flows {
 
         Features.login(driver, caps, userID, password, environment);
         Features.addItemToFavoritesFromEshop(driver, caps, false);
-        Features.removeItemFromFavoritesToBasket(driver, caps, true);
+        Features.removeItemFromFavorites(driver, caps, true);
     }
 
     @Test
     public static void favoriteProductsAddItemToBasketFromFavoritesList(Credentials.Environment environment) throws MalformedURLException, InterruptedException {
         String sessionName = "Add item to Basket from favorites";
-        String userID = "0744888000";
-        String password = "Pw0744888000";
+        String userID = "0733444555";
+        String password = "Pw0733444555";
 
         DesiredCapabilities caps = InitialSetup.initiateCapabilities(sessionName, environment);
         AndroidDriver<AndroidElement> driver = InitialSetup.initiateDriver(caps);
